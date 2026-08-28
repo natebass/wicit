@@ -1,0 +1,35 @@
+assets:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "public/**"
+          - "screenshots/**"
+          - "src/assets/**"
+
+deployment:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/workflows/**"
+
+development:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".vscode/**"
+
+documentation:
+  - all:
+      - changed-files:
+          - any-glob-to-any-file:
+              - "**/README.md"
+              - ".github/**"
+          - all-globs-to-all-files:
+              - "!./.github/workflows/**"
+              - "!./.github/labeler.yml"
+
+data:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "food_data"
+          - "sample_data"
+          - "vendor_locs"
+          - "**/*.pdf"
+          - "**/*.pdf"

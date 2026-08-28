@@ -1,0 +1,62 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.17.0
+        with:
+          node-version: "24"
+          cache: true
+
+      - name: Install dependencies
+        run: vp install
+
+      - name: Build
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          VITE_MAPBOX_INTEGRATION_URL: ${{ vars.VITE_MAPBOX_INTEGRATION_URL }}
+        run: vp build
+
+      - name: Preserve SPA routes
+        run: cp dist/index.html dist/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

@@ -223,8 +223,8 @@ importers:
         specifier: github:twbs/bootstrap#v6-dev
         version: https://codeload.github.com/twbs/bootstrap/tar.gz/5ace9b3108208addec3ed368008aac5d48189d59(@floating-ui/dom@1.8.0)(vanilla-calendar-pro@3.3.1)
       leaflet:
-        specifier: 2.0.0-alpha.1
-        version: 2.0.0-alpha.1
+        specifier: 1.9.4
+        version: 1.9.4
     devDependencies:
       sass:
         specifier: ^1.103.1
@@ -1015,8 +1015,8 @@ packages:
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
-  leaflet@2.0.0-alpha.1:
-    resolution: {integrity: sha512-2EJU27z/wljOgQCyybRkfrm5Xc3uy6huKehh0UAPsrAdwnSMxaplsqCl9cXPAuDm6D7uL6PCznYMDVIsaAdSdA==}
+  leaflet@1.9.4:
+    resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
 
   lightningcss-android-arm64@1.33.0:
     resolution: {integrity: sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==}
@@ -1789,7 +1789,7 @@ snapshots:
 
   js-tokens@4.0.0: {}
 
-  leaflet@2.0.0-alpha.1: {}
+  leaflet@1.9.4: {}
 
   lightningcss-android-arm64@1.33.0:
     optional: true

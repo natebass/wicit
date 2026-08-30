@@ -1,3 +1,5 @@
+import { escapeHtml } from "../lib/utility.js";
+
 const RESULTS_PER_PAGE = 25;
 const DEBOUNCE = 200;
 
@@ -14,17 +16,6 @@ function loadFoods() {
     foodsPromise = import("../../../sample_data/foods.json").then((m) => m.default);
   }
   return foodsPromise;
-}
-
-/**
- * Escape the user/data text before injecting into innerHTML.
- * */
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 /**

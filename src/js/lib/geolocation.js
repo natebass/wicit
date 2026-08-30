@@ -8,8 +8,28 @@
 const CACHE_LIFETIME = 86400000;
 const STORAGE_KEY = "position";
 
+/** How long to wait for a fix before rejecting, in milliseconds. */
+const POSITION_TIMEOUT = 10000;
+
 /** @type {GeolocationPosition | false} In-memory cache of the last known position. */
 let cachedPosition = loadCachedPosition();
+
+/**
+ * Resolve `localStorage`, or null when it is unavailable.
+ *
+ * Safari throws a SecurityError on the `window.localStorage` access itself when
+ * the user blocks cookies, so the access has to be guarded, not just the read.
+ *
+ * @return {Storage|null}
+ */
+function storage() {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage || null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Retrieves the cached position from localStorage if it exists and is still valid.
@@ -18,10 +38,11 @@ let cachedPosition = loadCachedPosition();
  * @return {object|boolean} The cached position object if valid; otherwise, `false` if the cache is invalid or not available.
  */
 function loadCachedPosition() {
-  if (typeof window === "undefined" || !window.localStorage) return false;
+  const store = storage();
+  if (!store) return false;
   let position;
   try {
-    position = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    position = JSON.parse(store.getItem(STORAGE_KEY));
   } catch {
     position = false;
   }
@@ -77,13 +98,14 @@ export function getPosition(options = {}) {
       (pos) => {
         cachedPosition = pos;
         resolve(pos);
-        if (window.localStorage) {
-          try {
-            localStorage.setItem(STORAGE_KEY, encodePosition(pos));
-          } catch {}
-        }
+        try {
+          storage()?.setItem(STORAGE_KEY, encodePosition(pos));
+        } catch {}
       },
       (error) => reject(error),
+      // Without a timeout the prompt can hang indefinitely if the user neither
+      // grants nor denies, leaving callers waiting on a promise that never settles.
+      { timeout: POSITION_TIMEOUT },
     );
   });
 }

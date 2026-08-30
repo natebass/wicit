@@ -18,13 +18,3 @@ export const locationsApiUrl = import.meta.env.VITE_LOCATIONS_API_URL;
  * @type {string}
  */
 export const locationsResourceId = import.meta.env.VITE_LOCATIONS_RESOURCE_ID;
-
-/**
- * Determines if a given URL is a valid tile template.
- *
- * @param {string} url - The URL to validate as a tile template.
- * @return {boolean} Returns true if the URL is a valid tile template, otherwise false.
- */
-export function isTileTemplate(url) {
-  return typeof url === "string" && /^https?:\/\//.test(url) && url.includes("{z}");
-}

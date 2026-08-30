@@ -2,16 +2,31 @@ import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { getPosition } from "../lib/geolocation.js";
 import { addNotification, STATUSES } from "../lib/notifications.js";
-import {
-  isTileTemplate,
-  locationsApiUrl,
-  locationsResourceId,
-  mapboxIntegrationUrl,
-} from "../lib/config.js";
+import { locationsApiUrl, locationsResourceId, mapboxIntegrationUrl } from "../lib/config.js";
+import { escapeHtml } from "../lib/utility.js";
 
 const DEFAULT_ZOOM = 13;
 const MAX_ZOOM = 18;
 const MIN_ZOOM = 10;
+
+/** How long to wait on the locations API before falling back to sample data, in milliseconds. */
+const REQUEST_TIMEOUT = 10000;
+
+/**
+ * Create a request timeout signal, including support for browsers without AbortSignal.timeout.
+ *
+ * @param {number} timeout - Timeout in milliseconds.
+ * @returns {AbortSignal}
+ */
+function createTimeoutSignal(timeout) {
+  if (typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function") {
+    return AbortSignal.timeout(timeout);
+  }
+
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), timeout);
+  return controller.signal;
+}
 
 /** @type {[number, number]} Default map center used until geolocation resolves. */
 const DEFAULT_CENTER = [38.5556, -121.4689];
@@ -37,17 +52,31 @@ function iconFactory(name, size = 30) {
 }
 
 /**
- * Escape text destined for popup HTML.
+ * Determines if a given URL is a valid tile template.
  *
- * @param {unknown} value
- * @returns {string}
+ * @param {string} url - The URL to validate as a tile template.
+ * @return {boolean} Returns true if the URL is a valid tile template, otherwise false.
  */
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+function isTileTemplate(url) {
+  return typeof url === "string" && /^https?:\/\//.test(url) && url.includes("{z}");
+}
+
+/**
+ * Recalculate the map's size whenever its container is resized.
+ *
+ * Leaflet 1.x only tracks the window's `resize` event, which iOS Safari does not
+ * fire when the address bar collapses or expands. The container still changes
+ * height, so the map keeps a stale size and renders blank. Leaflet 2.x watches
+ * the container with a ResizeObserver; this restores that behavior.
+ *
+ * @param {L.Map} map - The Leaflet map instance.
+ * @param {Element} container - The map's container element.
+ */
+function observeContainerSize(map, container) {
+  if (typeof ResizeObserver === "undefined") return;
+  const observer = new ResizeObserver(() => map.invalidateSize({ debounceMoveend: true }));
+  observer.observe(container);
+  map.on("unload", () => observer.disconnect());
 }
 
 /**
@@ -124,37 +153,52 @@ export function initMapView() {
   const container = document.querySelector("#map-container");
   if (!container) return;
 
-  const pinIcon = iconFactory("pin");
-  const markerIcon = iconFactory("marker");
-
-  const map = new L.Map(container, {
-    center: DEFAULT_CENTER,
-    zoom: DEFAULT_ZOOM,
-    minZoom: MIN_ZOOM,
-    maxZoom: MAX_ZOOM,
-    zoomControl: false,
-  });
-  new L.Control.Zoom({ position: "bottomright" }).addTo(map);
-
-  if (isTileTemplate(mapboxIntegrationUrl)) {
-    new L.TileLayer(mapboxIntegrationUrl, {
-      maxZoom: MAX_ZOOM,
-      minZoom: MIN_ZOOM,
-      detectRetina: true,
-    }).addTo(map);
-  }
-
-  const userMarker = new L.Marker(DEFAULT_CENTER, { icon: pinIcon }).addTo(map);
-
-  const vendorLayer = new L.LayerGroup().addTo(map);
-  const seenVendors = new Set();
-
-  addLocateControl(map, () => geolocate({ forceUpdate: true }));
-
   /** Clear the container's loading state. */
   function stopLoading() {
     container.classList.remove("loading");
   }
+
+  let pinIcon, markerIcon, map, userMarker, vendorLayer;
+
+  // Any throw during setup would otherwise leave the container stuck on its
+  // loading spinner with nothing surfaced to the user or the console.
+  try {
+    pinIcon = iconFactory("pin");
+    markerIcon = iconFactory("marker");
+
+    map = new L.Map(container, {
+      center: DEFAULT_CENTER,
+      zoom: DEFAULT_ZOOM,
+      minZoom: MIN_ZOOM,
+      maxZoom: MAX_ZOOM,
+      zoomControl: false,
+    });
+    new L.Control.Zoom({ position: "bottomright" }).addTo(map);
+
+    if (isTileTemplate(mapboxIntegrationUrl)) {
+      new L.TileLayer(mapboxIntegrationUrl, {
+        maxZoom: MAX_ZOOM,
+        minZoom: MIN_ZOOM,
+        detectRetina: true,
+      }).addTo(map);
+    }
+
+    userMarker = new L.Marker(DEFAULT_CENTER, { icon: pinIcon }).addTo(map);
+    vendorLayer = new L.LayerGroup().addTo(map);
+    observeContainerSize(map, container);
+  } catch (error) {
+    console.error("Map failed to initialize:", error);
+    stopLoading();
+    addNotification({
+      message: `Dang, the map couldn't load on this browser. ${error?.message ?? error}`,
+      status: STATUSES.ERROR,
+    });
+    return;
+  }
+
+  const seenVendors = new Set();
+
+  addLocateControl(map, () => geolocate({ forceUpdate: true }));
 
   /**
    * Center the map on the user's position or notify on failure.
@@ -199,7 +243,10 @@ export function initMapView() {
       `AND "LATITUDE" BETWEEN ${bounds.getSouth()} AND ${bounds.getNorth()}`;
     const url = `${locationsApiUrl}?sql=${encodeURIComponent(sql)}`;
 
-    fetch(url, { headers: { Accept: "application/json" } })
+    fetch(url, {
+      headers: { Accept: "application/json" },
+      signal: createTimeoutSignal(REQUEST_TIMEOUT),
+    })
       .then((response) => {
         if (!response.ok) throw new Error(`Request failed: ${response.status}`);
         return response.json();

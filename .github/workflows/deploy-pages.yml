@@ -28,13 +28,10 @@ jobs:
         uses: actions/configure-pages@v6
 
       - name: Setup Vite+
-        uses: voidzero-dev/setup-vp@v1.17.0
+        uses: voidzero-dev/setup-vp@v1.18.0
         with:
           node-version: "24"
           cache: true
-
-      - name: Install dependencies
-        run: vp install
 
       - name: Build
         env:

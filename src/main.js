@@ -1,6 +1,7 @@
 import "./scss/style.scss";
 import { Header } from "./js/components/header.js";
 import { Footer } from "./js/components/footer.js";
+import { initLanguageSwitcher } from "./js/components/language-switcher.js";
 import { initI18n, onLocaleChange } from "./js/i18n/index.js";
 import { initRouter, router } from "./js/lib/router.js";
 import { basePath } from "./js/lib/paths.js";
@@ -38,6 +39,7 @@ function renderShell() {
 initI18n().then(() => {
   renderShell();
   initRouter();
+  initLanguageSwitcher();
   onLocaleChange(() => {
     renderShell();
     router();

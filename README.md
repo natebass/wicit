@@ -25,6 +25,23 @@
 2. Start the server: `vp dev`
 3. [Try it out](http://localhost:5173)
 
+### Translations
+
+WICit renders every string through a message catalog, so the app can be read in the languages
+Californians actually speak. English (`src/js/i18n/locales/en.json`) is the source of truth;
+lookups fall back to it key by key, so a partial catalog renders translated where it can and
+English everywhere else.
+
+**The other twelve languages are stubs.** The runtime, the switcher, and the catalogs are in
+place, but no strings have been translated yet.
+
+- Pick a language from the header, or append `?lang=<code>` to any URL to link straight into one.
+  The choice is remembered, and the browser's own language is used on a first visit.
+- To translate, edit the catalog for the language and follow
+  [`src/js/i18n/locales/README.md`](src/js/i18n/locales/README.md).
+- To add a language, add an entry to `src/js/i18n/locales.js` and a matching JSON catalog. The
+  switcher, the `<html lang>`/`dir` attributes, and number formatting all read that registry.
+
 ### License
 
 WICit is free software, and may be redistributed under the MIT-LICENSE.

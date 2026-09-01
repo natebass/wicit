@@ -1,4 +1,5 @@
 import { t } from "../i18n/index.js";
+import { LanguageSwitcher } from "./language-switcher.js";
 import { basePath } from "../lib/paths.js";
 
 /**
@@ -15,6 +16,7 @@ export function Header() {
         <img src="${basePath("image/logo.png")}" title="${t("header.logoTitle")}" alt='${t("header.logoAlt")}'/>
         <p>${t("header.tagline")}</p>
       </div>
+      ${LanguageSwitcher()}
       <div id="menu-wrapper">
         <ul id="main-menu">
           <li><a href="/map" data-link>${t("nav.map")}</a></li>

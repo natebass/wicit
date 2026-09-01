@@ -3,6 +3,7 @@ import "leaflet/dist/leaflet.css";
 import { getPosition } from "../lib/geolocation.js";
 import { addNotification, STATUSES } from "../lib/notifications.js";
 import { locationsApiUrl, locationsResourceId, mapboxIntegrationUrl } from "../lib/config.js";
+import { t } from "../i18n/index.js";
 import { escapeHtml } from "../lib/utility.js";
 
 const DEFAULT_ZOOM = 13;
@@ -190,7 +191,7 @@ export function initMapView() {
     console.error("Map failed to initialize:", error);
     stopLoading();
     addNotification({
-      message: `Dang, the map couldn't load on this browser. ${error?.message ?? error}`,
+      message: t("map.initFailed", { reason: error?.message ?? error }),
       status: STATUSES.ERROR,
     });
     return;
@@ -216,8 +217,8 @@ export function initMapView() {
       (error) => {
         const message =
           error && error.code === error.PERMISSION_DENIED
-            ? "Dang, geolocation is disabled."
-            : "Dang, we can't get your location.";
+            ? t("map.geolocationDenied")
+            : t("map.geolocationFailed");
         addNotification({ message, status: STATUSES.ERROR });
         stopLoading();
       },
@@ -273,14 +274,14 @@ export function initMapView() {
           .filter((v) => !Number.isNaN(v.lat) && bounds.contains([v.lat, v.lng]));
         renderVendors(inView);
         addNotification({
-          message: "Showing sample locations (live data unavailable).",
+          message: t("map.sampleFallback"),
           status: STATUSES.INFO,
         });
         stopLoading();
       })
       .catch(() => {
         addNotification({
-          message: "Unable to load nearby locations.",
+          message: t("map.locationsFailed"),
           status: STATUSES.ERROR,
         });
         stopLoading();
@@ -318,7 +319,9 @@ export function initMapView() {
     const popup = `
       <h3>${escapeHtml(vendor.name)}</h3>
       <p class="address">${escapeHtml(address)}</p>
-      <p class="directions"><a href="${directions}" target="_blank" rel="noopener">Directions</a></p>
+      <p class="directions">
+        <a href="${directions}" target="_blank" rel="noopener">${t("map.directions")}</a>
+      </p>
     `;
 
     new L.Marker([vendor.lat, vendor.lng], { icon: markerIcon })
@@ -343,6 +346,7 @@ function addLocateControl(map, onClick) {
     options: { position: "bottomright" },
     onAdd() {
       const container = L.DomUtil.create("div", "locate-control");
+      container.title = t("map.locateTitle");
       L.DomEvent.on(container, "click", (e) => {
         L.DomEvent.stop(e);
         onClick();

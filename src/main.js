@@ -1,8 +1,8 @@
 import "./scss/style.scss";
-// oxlint-disable-next-line no-unused-vars
 import { Header } from "./js/components/header.js";
 import { Footer } from "./js/components/footer.js";
-import { initRouter } from "./js/lib/router.js";
+import { initI18n, onLocaleChange } from "./js/i18n/index.js";
+import { initRouter, router } from "./js/lib/router.js";
 import { basePath } from "./js/lib/paths.js";
 
 document.documentElement.style.setProperty("--bg-image", `url("${basePath("image/bg7.jpg")}")`);
@@ -15,18 +15,31 @@ document.documentElement.style.setProperty(
   `url("${basePath("image/geolocate.png")}")`,
 );
 
-// Application layout shell
-document.querySelector("#app").innerHTML = `
-  <header id="header">
-    ${Header()}
-  </header>
-  <main id="main-content">
-  </main>
-  <footer id="footer">
-    ${Footer()}
-  </footer>
-  <ul id="global-notifications" class="notifications"></ul>
-`;
+/**
+ * Render the application layout shell. Every string inside it comes from the active message
+ * catalog, so this runs again whenever the language changes.
+ */
+function renderShell() {
+  document.querySelector("#app").innerHTML = `
+    <header id="header">
+      ${Header()}
+    </header>
+    <main id="main-content">
+    </main>
+    <footer id="footer">
+      ${Footer()}
+    </footer>
+    <ul id="global-notifications" class="notifications"></ul>
+  `;
+}
 
-// Initialize the router
-initRouter();
+// Catalogs load over the network while `t()` is synchronous, so nothing renders until the active
+// locale's catalog is in memory. A change of language re-renders the shell and the current view.
+initI18n().then(() => {
+  renderShell();
+  initRouter();
+  onLocaleChange(() => {
+    renderShell();
+    router();
+  });
+});

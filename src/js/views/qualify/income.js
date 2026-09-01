@@ -1,11 +1,12 @@
+import { t } from "../../i18n/index.js";
 import { navigateTo } from "../../lib/router.js";
 import { addNotification, STATUSES } from "../../lib/notifications.js";
 
 /** Pay-period multipliers to convert entered income to a yearly figure. */
 const PERIODS = [
-  { label: "year", value: 1 },
-  { label: "month", value: 12 },
-  { label: "week", value: 52 },
+  { label: "qualify.income.period.year", value: 1 },
+  { label: "qualify.income.period.month", value: 12 },
+  { label: "qualify.income.period.week", value: 52 },
 ];
 
 /**
@@ -14,21 +15,33 @@ const PERIODS = [
  */
 export function IncomeStep() {
   const options = PERIODS.map(
-    (period) => `<option value="${period.value}">${period.label}</option>`,
+    (period) => `<option value="${period.value}">${t(period.label)}</option>`,
   ).join("");
   return `
     <div class="form-group qualify income">
-      <span class="form-group-label">Last step...</span>
-      <label>How many people (including unborn children) in your family?</label>
-      <input class="family-count" type="text" maxlength="2" placeholder="4" size="2" />
+      <span class="form-group-label">${t("qualify.income.legend")}</span>
+      <label>${t("qualify.income.familySize")}</label>
+      <input
+        class="family-count"
+        type="text"
+        maxlength="2"
+        placeholder="${t("qualify.income.familySizePlaceholder")}"
+        size="2"
+      />
       <br />
-      <label>What is your family's combined income?</label>
+      <label>${t("qualify.income.combined")}</label>
       <span class="currency-sign">$</span>
-      <input class="family-income" type="text" maxlength="8" placeholder="amount" size="10" />
-      <span class="per">per</span>
+      <input
+        class="family-income"
+        type="text"
+        maxlength="8"
+        placeholder="${t("qualify.income.amountPlaceholder")}"
+        size="10"
+      />
+      <span class="per">${t("qualify.income.per")}</span>
       <select class="family-payperiod form-control">${options}</select>
       <br />
-      <button type="button" id="qualify-submit">Do I Qualify?</button>
+      <button type="button" id="qualify-submit">${t("qualify.income.submit")}</button>
     </div>
   `;
 }
@@ -48,12 +61,12 @@ export function initIncomeStep() {
 
     let error = false;
     if (!income) {
-      addNotification({ message: "Please enter your income.", status: STATUSES.ERROR });
+      addNotification({ message: t("qualify.income.missingIncome"), status: STATUSES.ERROR });
       error = true;
     }
     if (!count) {
       addNotification({
-        message: "Please enter the number of people in your family.",
+        message: t("qualify.income.missingFamilySize"),
         status: STATUSES.ERROR,
       });
       error = true;

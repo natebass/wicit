@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js";
 import { basePath } from "../lib/paths.js";
 
 /**
@@ -11,15 +12,15 @@ export function Header() {
   return `
     <div>
       <div class="logo">
-        <img src="${basePath("image/logo.png")}" title="WICit, Where and How to Get and Use WIC." alt='Find WIC logo.'/>
-        <p>Where and how to get and use WIC</p>
+        <img src="${basePath("image/logo.png")}" title="${t("header.logoTitle")}" alt='${t("header.logoAlt")}'/>
+        <p>${t("header.tagline")}</p>
       </div>
       <div id="menu-wrapper">
         <ul id="main-menu">
-          <li><a href="/map" data-link>Who Accepts WIC?</a></li>
-          <li><a href="/qualify/residency" data-link>Do I Qualify?</a></li>
-          <li><a href="/about" data-link>What Is WIC?</a></li>
-          <li><a href="/search" data-link>Which Foods Qualify?</a></li>
+          <li><a href="/map" data-link>${t("nav.map")}</a></li>
+          <li><a href="/qualify/residency" data-link>${t("nav.qualify")}</a></li>
+          <li><a href="/about" data-link>${t("nav.about")}</a></li>
+          <li><a href="/search" data-link>${t("nav.search")}</a></li>
         </ul>
       </div>
     </div>

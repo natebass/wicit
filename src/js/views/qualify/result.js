@@ -1,3 +1,13 @@
+import { formatCurrency, t } from "../../i18n/index.js";
+
+/**
+ * The Federal Poverty Level figure the income copy cites, and the year it was published.
+ * Named here so the copy carries a formatted number the reader's locale can group, rather than a
+ * hard-coded "$23,850" that reads wrong in most languages.
+ */
+const CITED_POVERTY_LEVEL = 23850;
+const CITED_POVERTY_LEVEL_YEAR = 2014;
+
 /**
  * The qualify result. Reads `success` and `reason` from the query string and shows the matching outcome.
  *
@@ -13,54 +23,43 @@ export function ResultStep(ctx) {
 
   if (success) {
     return `
-      <h3>You probably qualify for WIC!</h3>
-      <p class="success">
-        Your next step is to talk to a WIC agent. Call&nbsp;<a href="tel://888-942-9675">1-888-WIC-WORKS</a>
-        to get started.
-      </p>
+      <h3>${t("qualify.result.success.heading")}</h3>
+      <p class="success">${t("qualify.result.success.body")}</p>
     `;
   }
 
   if (reason === "residency") {
     return `
-      <h3>Sorry, you have to live in-state to qualify for WIC in California.</h3>
-      <p class="warning">
-        If you're moving here, WIC can work with you. Give them a call at&nbsp;<a href="tel://888-942-9675">1-888-WIC-WORKS</a>.
-      </p>
+      <h3>${t("qualify.result.residency.heading")}</h3>
+      <p class="warning">${t("qualify.result.residency.body")}</p>
     `;
   }
 
   if (reason === "category") {
     return `
-      <h3>Sorry, WIC is for people who identify with one of the following:</h3>
+      <h3>${t("qualify.result.category.heading")}</h3>
       <ul>
-        <li>Women who are pregnant, breastfeeding, or just had a baby.</li>
-        <li>Children under 5 years old (including foster children)</li>
-        <li>Families with low to medium income (working families may qualify)</li>
+        <li>${t("about.who.women")}</li>
+        <li>${t("about.who.children")}</li>
+        <li>${t("about.who.income")}</li>
       </ul>
-      <p class="warning">
-        A WIC agent may be able to help you find a different program that can help. To talk to a WIC
-        agent, call&nbsp;<a href="tel://888-942-9675">1-888-WIC-WORKS</a>.
-      </p>
+      <p class="warning">${t("qualify.result.category.body")}</p>
     `;
   }
 
   if (reason === "income") {
+    const body = t("qualify.result.income.body", {
+      threshold: formatCurrency(CITED_POVERTY_LEVEL),
+      year: CITED_POVERTY_LEVEL_YEAR,
+    });
     return `
-      <h3>You might not qualify for WIC.</h3>
-      <p class="warning">
-        WIC is for families making less than 185% of the Federal Poverty Level ($23,850 for a family
-        of four in 2014). You should still talk to a WIC agent at&nbsp;<a href="tel://888-942-9675">1-888-WIC-WORKS</a>
-        to find out for sure whether you qualify.
-      </p>
+      <h3>${t("qualify.result.income.heading")}</h3>
+      <p class="warning">${body}</p>
     `;
   }
 
   return `
-    <h3>Whoops!</h3>
-    <p class="warning">
-      Told you we don't save your data! You can take the&nbsp;<a href="/qualify/residency" data-link>quiz</a>
-      again though.
-    </p>
+    <h3>${t("qualify.result.unknown.heading")}</h3>
+    <p class="warning">${t("qualify.result.unknown.body")}</p>
   `;
 }

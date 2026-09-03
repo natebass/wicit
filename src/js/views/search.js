@@ -1,3 +1,4 @@
+import { formatNumber, t, tCount, tHtml } from "../i18n/index.js";
 import { escapeHtml } from "../lib/utility.js";
 
 const RESULTS_PER_PAGE = 25;
@@ -26,28 +27,20 @@ function loadFoods() {
 export function SearchView() {
   return `
     <div class="col-md-8 col-md-offset-2" id="content">
-      <h2>Which Foods Qualify for WIC?</h2>
+      <h2>${t("search.heading")}</h2>
       <div class="row search-wrap">
         <div class="search-col col-xs-12 col-sm-8 col-md-7">
-          <p class="info">
-            We're still working on this feature. This is not a complete list — see the
-            <a href="https://www.fns.usda.gov/wic/wic-food-packages-regulatory-requirements-wic-eligible-foods"
-               target="_blank" rel="noopener">USDA website</a>
-            for more details on qualified foods.
-          </p>
+          <p class="info">${t("search.disclaimer")}</p>
           <input
             class="form-control"
             id="search-input"
             type="text"
-            placeholder="Search Qualifying Foods..."
+            placeholder="${t("search.placeholder")}"
           />
           <div id="search-state">
-            <div class="well">Search for WIC-eligible foods, brands, and UPC codes.</div>
+            <div class="well">${t("search.initial")}</div>
           </div>
-          <p class="info">
-            If you have any ideas on how we can improve this feature, please tweet us
-            <a href="https://twitter.com/wicitapp" target="_blank" rel="noopener">@wicitapp</a>.
-          </p>
+          <p class="info">${t("feedback.tweetUs")}</p>
         </div>
       </div>
     </div>
@@ -67,24 +60,26 @@ export function initSearchView() {
 
   /** HTML renderers for each state of the search results panel. */
   const render = {
-    initial: () => `<div class="well">Search for WIC-eligible foods, brands, and UPC codes.</div>`,
-    pending: () => `<div class="well">Searching...</div>`,
-    error: () => `<div class="alert alert-danger">Sorry, something has gone wrong.</div>`,
-    noResults: (query) =>
-      `<div class="well">No results for &ldquo;${escapeHtml(query)}&rdquo; found.</div>`,
+    initial: () => `<div class="well">${t("search.initial")}</div>`,
+    pending: () => `<div class="well">${t("search.pending")}</div>`,
+    error: () => `<div class="alert alert-danger">${t("search.error")}</div>`,
+    noResults: (query) => `<div class="well">${tHtml("search.noResults", { query })}</div>`,
     results: (results, count) => {
       const items = results
         .map(
           (result) => `
             <li class="list-group-item">
               ${escapeHtml(result["Brand Name"])} ${escapeHtml(result["Product Name"])}
-              <div class="upc">UPC: ${escapeHtml(result["UPC"])}</div>
+              <div class="upc">${tHtml("search.upc", { upc: result["UPC"] })}</div>
             </li>`,
         )
         .join("");
       return `
         <ul class="list-group" id="search-results">${items}</ul>
-        <div>${results.length} of ${count} results.</div>
+        <div>${tCount("search.resultCount", count, {
+          shown: formatNumber(results.length),
+          total: formatNumber(count),
+        })}</div>
       `;
     },
   };

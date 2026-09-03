@@ -1,38 +1,25 @@
+import { formatCurrency, t } from "../i18n/index.js";
+
+/** The seasonal Farmers' Market Nutrition Program benefit, in dollars. */
+const FMNP_SEASONAL_BENEFIT = 20;
+
 /**
  * About page.
  */
 export function AboutView() {
   return `
     <div class="col-md-8 col-md-offset-2" id="content">
-      <h2>About WIC</h2>
-      <p>
-        WIC is a federally-funded health and nutrition program for women, infants, and children. WIC
-        helps families by providing checks for buying healthy supplemental foods from WIC-authorized
-        vendors, nutrition education, and help finding healthcare and other community services. In
-        California, 84 WIC agencies provide services locally to over 1.45 million participants each
-        month at over 650 sites throughout the State.
-      </p>
-      <h3>Who Is WIC For?</h3>
+      <h2>${t("about.heading")}</h2>
+      <p>${t("about.intro")}</p>
+      <h3>${t("about.who.heading")}</h3>
       <ul>
-        <li>Women who are pregnant, breastfeeding, or just had a baby.</li>
-        <li>Children under 5 years old (including foster children)</li>
-        <li>Families with low to medium income (working families may qualify)</li>
+        <li>${t("about.who.women")}</li>
+        <li>${t("about.who.children")}</li>
+        <li>${t("about.who.income")}</li>
       </ul>
-      <p>
-        To see if you qualify for WIC, try our<a href="/qualify/residency" data-link> 'Do I Qualify?'</a> quiz.
-      </p>
-      <h3>Getting Started with WIC</h3>
-      <p class="important">
-        Call&nbsp;<a href="tel://888-942-9675">1-888-WIC-WORKS</a> to talk to a WIC staff member who
-        can help you find your local WIC office. Check out&nbsp;<a
-          href="https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx"
-          target="_blank"
-          rel="noopener"
-          >California's official WIC site</a
-        >
-        for more official information about WIC. Watch the video below for an introduction to the
-        program.
-      </p>
+      <p>${t("about.who.quizPrompt")}</p>
+      <h3>${t("about.start.heading")}</h3>
+      <p class="important">${t("about.start.body")}</p>
       <div class="video-container">
         <iframe
           width="560"
@@ -41,63 +28,25 @@ export function AboutView() {
           allowfullscreen="allowfullscreen"
         ></iframe>
       </div>
-      <h3>Resources</h3>
-      <p>
-        WIC offers lots of programs and services to help keep California healthy. From educational
-         materials to programs that help participants shop at local farmers' markets, WIC can help
-        make sure you and your kids get the nutrition you need.
-      </p>
-      <h4>Farmers' markets</h4>
-      <p>
-        WIC offers two programs to help you buy fruits and vegetables at your local farmers' market.
-      </p>
+      <h3>${t("about.resources.heading")}</h3>
+      <p>${t("about.resources.intro")}</p>
+      <h4>${t("about.markets.heading")}</h4>
+      <p>${t("about.markets.intro")}</p>
       <ul>
         <li>
-          <h5>Farmers' Market Nutrition Program (FMNP)</h5>
-          <p>
-            The Farmers' Market Nutrition Program (FMNP) is funded by the U.S. Department of
-            Agriculture (USDA) to provide fresh, nutritious, locally grown fruits and vegetables from
-            farmers' markets to WIC families and seniors. Each eligible WIC family or senior receives
-            $20 in checks each season to purchase fresh fruits, vegetables, and cut herbs from a WIC
-            authorized farmer at WIC authorized market in California.
-          </p>
+          <h5>${t("about.markets.fmnp.heading")}</h5>
+          <p>${t("about.markets.fmnp.body", { amount: formatCurrency(FMNP_SEASONAL_BENEFIT) })}</p>
         </li>
         <li>
-          <h5>WIC Fruit &amp; Vegetable Checks (FVC)</h5>
-          <p>
-            In October 2009, fruit and vegetables were added to the WIC food package for participants
-            to purchase at authorized grocery stores. In May 2010 the first farmers' market was
-            authorized to accept WIC fruit and vegetable checks. Since 2010, over 200 farmers and 35
-            markets have been authorized to accept the fruit and vegetable checks.
-          </p>
+          <h5>${t("about.markets.fvc.heading")}</h5>
+          <p>${t("about.markets.fvc.body")}</p>
         </li>
       </ul>
-      <h4>Educational Materials</h4>
-      <p>
-        The more you know about health, the easier it is to keep your kids healthy. Check out the
-        official WIC site's&nbsp;<a
-          href="https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx"
-          target="_blank"
-          rel="noopener"
-          >education materials</a
-        >
-        for more.
-      </p>
-      <h3>About WICit</h3>
-      <p>
-        WICit and findwic.com are not affiliated with any federal or state WIC programs. WICit was
-        created by&nbsp;<a href="https://opensac.org" target="_blank" rel="noopener">Code for Sacramento</a>&nbsp;to
-        help Californians more easily get and use WIC. If you're interested in deploying WICit in your
-        state, check out the&nbsp;<a href="https://github.com/opensacorg/wicit" target="_blank" rel="noopener">WICit github repo</a>.
-      </p>
-      <p class="attribution">
-        The map's Shopping Cart icon designed by
-        <a href="https://thenounproject.com/rjsokolov" target="_blank" rel="noopener">Roman J. Sokolov</a> from the
-        <a href="https://thenounproject.com" target="_blank" rel="noopener">Noun Project</a>.<br />
-        The map's Location icon designed by
-        <a href="https://thenounproject.com/gilad1" target="_blank" rel="noopener">Gilad Fried</a> from the
-        <a href="https://thenounproject.com" target="_blank" rel="noopener">Noun Project</a>.
-      </p>
+      <h4>${t("about.education.heading")}</h4>
+      <p>${t("about.education.body")}</p>
+      <h3>${t("about.wicit.heading")}</h3>
+      <p>${t("about.wicit.body")}</p>
+      <p class="attribution">${t("about.attribution")}</p>
     </div>
   `;
 }

@@ -133,3 +133,26 @@ div.video-container {
     padding: 20px;
   }
 }
+
+/**
+ * Right-to-left support for Arabic and Persian. The runtime sets `<html dir>` from the active
+ * locale, so these only need to mirror the properties the layout still sets one-sidedly.
+ *
+ * @see src/js/i18n/locales.js
+ */
+[dir="rtl"] {
+  #content,
+  .form-group.qualify,
+  p {
+    text-align: right;
+  }
+
+  div.video-container {
+    iframe,
+    object,
+    embed {
+      left: auto;
+      right: 0;
+    }
+  }
+}

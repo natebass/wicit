@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Website: dev server",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "vp dev",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "hidden": true
+      }
+    },
+    {
+      "name": "Website: open in Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/src",
+      "presentation": {
+        "hidden": true
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Website",
+      "configurations": ["Website: dev server", "Website: open in Chrome"],
+      "stopAll": true,
+      "presentation": {
+        "order": 1
+      }
+    }
+  ]
+}

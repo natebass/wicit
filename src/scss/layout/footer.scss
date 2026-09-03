@@ -1,0 +1,17 @@
+@use "../abstracts/index" as *;
+
+#footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.85em;
+  color: $brand-text;
+
+  .footer-inner {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  p {
+    margin: 0;
+  }
+}

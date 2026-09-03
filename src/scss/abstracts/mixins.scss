@@ -1,0 +1,16 @@
+/// Apply a border radius.
+///
+/// @param {Length} $radius
+@mixin border-radius($radius) {
+  border-radius: $radius;
+}
+
+/// Declare a set of keyframes by name.
+///
+/// @param {String} $name
+///   Keyframe stops.
+@mixin keyframes($name) {
+  @keyframes #{$name} {
+    @content;
+  }
+}

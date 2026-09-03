@@ -98,9 +98,7 @@ function matchRoute(pathname) {
  * parseQuery("?a=1&b=2")
  */
 function parseQuery(search) {
-  const query = {};
-  new URLSearchParams(search).forEach((value, key) => (query[key] = value));
-  return query;
+  return Object.fromEntries(new URLSearchParams(search));
 }
 
 /**
